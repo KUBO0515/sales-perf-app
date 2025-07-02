@@ -1,7 +1,6 @@
 import ChartCard from '../components/ChartCard'
 import { exportCsv } from '../firebase'
 import AdminSidebar from '../Layouts/AdminSidebar'
-import motion from 'framer-motion'
 
 export default function AdminDashboard() {
   const download = async () => {
