@@ -1,19 +1,19 @@
-import { Link } from "react-router-dom";
-import { ChartLine, Database, LayoutGrid } from "lucide-react";
+import { Link } from 'react-router-dom'
+import { ChartLine, Database, LayoutGrid } from 'lucide-react'
 
 export default function AdminSidebar() {
   return (
-    <aside className="w-[280px] h-screen fixed top-0 left-0 bg-gray-800 text-white p-4 flex flex-col justify-between">
+    <aside className="fixed top-0 left-0 flex h-screen w-[280px] flex-col justify-between bg-gray-800 p-4 text-white">
       <div className="flex flex-col">
         <Link to="/admin">
-          <h3 className="text-2xl m-4 text-center flex items-center gap-6">
+          <h3 className="m-4 flex items-center gap-6 text-center text-2xl">
             <LayoutGrid />
             DashBoard
           </h3>
         </Link>
         <Link to="/record">
           <div className="group m-4">
-            <button className="w-full p-5 rounded-lg text-white font-bold transition duration-300 group-hover:bg-gray-600 text-center flex items-center gap-6 cursor-pointer">
+            <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <Database />
               Record
             </button>
@@ -21,7 +21,7 @@ export default function AdminSidebar() {
         </Link>
         <Link to="/analytics">
           <div className="group m-4">
-            <button className="w-full p-5 rounded-lg text-white font-bold transition duration-300 group-hover:bg-gray-600 text-center flex items-center gap-6 cursor-pointer">
+            <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <ChartLine />
               Analytics
             </button>
@@ -30,10 +30,10 @@ export default function AdminSidebar() {
       </div>
 
       <div className="m-4">
-        <button className="btn btn-secondary cursor-pointer w-full py-4 text-lg font-bold">
+        <button className="btn btn-secondary w-full cursor-pointer py-4 text-lg font-bold">
           Export CSV
         </button>
       </div>
     </aside>
-  );
+  )
 }

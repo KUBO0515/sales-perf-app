@@ -1,9 +1,9 @@
-
 # Sales Performance App
 
 React + Vite frontend with Firebase backend (Auth, Firestore, Functions, Storage).
 
 ## Quick Start
+
 ```bash
 nvm install --lts
 npm i -g firebase-tools

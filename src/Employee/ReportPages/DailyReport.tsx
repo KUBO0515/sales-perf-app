@@ -1,6 +1,6 @@
-import ReportForm from "../../Layouts/Formats/SampleReportForm";
-import MobileMenu from "../../Layouts/MobileMenu";
-import PageHeader from "../../Layouts/PageHeader";
+import ReportForm from '../../Layouts/Formats/SampleReportForm'
+import MobileMenu from '../../Layouts/MobileMenu'
+import PageHeader from '../../Layouts/PageHeader'
 
 export default function DailyReport() {
   return (
@@ -9,5 +9,5 @@ export default function DailyReport() {
       <ReportForm />
       <MobileMenu />
     </>
-  );
+  )
 }

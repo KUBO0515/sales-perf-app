@@ -1,8 +1,7 @@
-
-@import "tailwindcss";
+@import 'tailwindcss';
 
 .input {
-  @apply border rounded-md w-full p-2;
+  @apply w-full rounded-md border p-2;
 }
 .btn {
   @apply rounded-md px-4 py-2 font-semibold;

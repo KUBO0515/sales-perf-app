@@ -1,32 +1,32 @@
-import { useForm } from "react-hook-form";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { useForm } from 'react-hook-form'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db, auth } from '../firebase'
 
 interface Inputs {
-  count: number;
-  amount: number;
+  count: number
+  amount: number
 }
 
 export default function RecordForm() {
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset } = useForm<Inputs>()
 
   const onSubmit = async (data: Inputs) => {
-    if (!auth.currentUser) return;
-    await addDoc(collection(db, "records"), {
+    if (!auth.currentUser) return
+    await addDoc(collection(db, 'records'), {
       ownerUid: auth.currentUser.uid,
       ...data,
       createdAt: serverTimestamp(),
-    });
-    reset();
-  };
+    })
+    reset()
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-[300px]">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-[300px] space-y-4">
       <div>
         <label className="block text-sm">Count</label>
         <input
           type="number"
-          {...register("count", { valueAsNumber: true })}
+          {...register('count', { valueAsNumber: true })}
           className="input w-full"
         />
       </div>
@@ -34,7 +34,7 @@ export default function RecordForm() {
         <label className="block text-sm">Amount</label>
         <input
           type="number"
-          {...register("amount", { valueAsNumber: true })}
+          {...register('amount', { valueAsNumber: true })}
           className="input w-full"
         />
       </div>
@@ -42,5 +42,5 @@ export default function RecordForm() {
         Save
       </button>
     </form>
-  );
+  )
 }
