@@ -1,0 +1,13 @@
+{
+  "cSpell.ignoreWords": [
+    // Code spell checker で無視する単語(一般的な英単語ではないが、プロジェクト内で使用するためスペルミスではない単語)
+    "firestore",
+    "vite"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.validate": ["json", "javascript", "typescript"]
+}
