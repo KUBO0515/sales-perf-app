@@ -1,5 +1,7 @@
 {
   "name": "functions",
+  "private": true,
+  "version": "0.1.0",
   "engines": {
     "node": "20"
   },
@@ -15,5 +17,9 @@
   },
   "devDependencies": {
     "typescript": "^5.4.0"
+  },
+  "volta": {
+    "node": "20.19.3",
+    "npm": "10.9.3"
   }
 }

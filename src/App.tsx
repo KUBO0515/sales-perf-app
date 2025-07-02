@@ -13,7 +13,7 @@
 //     </Routes>
 //   );
 import { RouterProvider } from "react-router-dom";
-import { router } from "./App/router";
+import { router } from "./app/router";
 
 function App() {
   return (
