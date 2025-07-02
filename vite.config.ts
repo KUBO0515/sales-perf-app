@@ -4,10 +4,9 @@ import pkg from './package.json'
 import tailwindcss from '@tailwindcss/vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-
 export default defineConfig({
-  plugins: [react(),tsconfigPaths(),tailwindcss(),],
-    test: {
+  plugins: [react(), tsconfigPaths(), tailwindcss()],
+  test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
@@ -17,5 +16,10 @@ export default defineConfig({
   },
   define: {
     'import.meta.env.APP_VERSION': JSON.stringify(pkg.version),
+  },
+  server: {
+    watch: {
+      ignored: ['**/functions/**'],
+    },
   },
 })
