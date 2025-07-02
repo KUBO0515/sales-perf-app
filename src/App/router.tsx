@@ -10,6 +10,8 @@ import Profile from "../Employee/Profile";
 import Report from "../Employee/Report";
 import MobileHome from "../Employee/MobileHome";
 import DailyReport from "../Employee/ReportPages/DailyReport";
+import TestFirebase from "../Employee/TestFirebase";
+import LoginPage from "../pages/LoginPage";
 
 const MyPage = React.lazy(() => import("../pages/Home"));
 
@@ -18,16 +20,18 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Root />,
     children: [
-      { path: "/", element: <Navigate to="/mobilehome" replace /> },
-      { path: "/home", element: <Home /> },
+      { path: "/", element: <Navigate to="/login" replace /> },
+      //   { path: "/home", element: <Home /> },
       { path: "/admin", element: <AdminDashboard /> },
       { path: "/analytics", element: <Analytics /> },
       { path: "/record", element: <Record /> },
       { path: "/info", element: <Infomation /> },
       { path: "/user", element: <Profile /> },
       { path: "/report", element: <Report /> },
-      { path: "/mobilehome", element: <MobileHome /> },
+      { path: "/home", element: <MobileHome /> },
       { path: "/dailyreport", element: <DailyReport /> },
+      { path: "/testfirebase", element: <TestFirebase /> },
+      { path: "/login", element: <LoginPage /> },
     ],
   },
 ]);
