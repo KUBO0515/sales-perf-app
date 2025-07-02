@@ -1,6 +1,6 @@
-import ChartCard from '../../components/ChartCard'
-import { exportCsv } from '../../firebase'
-import AdminSidebar from '../../Layouts/AdminSidebar'
+import ChartCard from '@/components/ChartCard'
+import { exportCsv } from '@/firebase'
+import AdminSidebar from '@/components/AdminSidebar'
 
 export default function AdminDashboard() {
   const download = async () => {

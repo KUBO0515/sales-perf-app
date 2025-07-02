@@ -1,16 +1,16 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import React from 'react'
-import Root from '../pages/Root'
-import AdminDashboard from '../pages/AdminDashboard'
-import Analytics from '../pages/Analytics'
-import Record from '../pages/Record'
-import Infomation from '../Employee/Infomation'
-import Profile from '../Employee/Profile'
-import Report from '../Employee/Report'
-import MobileHome from '../Employee/MobileHome'
-import DailyReport from '../Employee/ReportPages/DailyReport'
-import TestFirebase from '../Employee/TestFirebase'
-import LoginPage from '../pages/LoginPage'
+import Root from '@pages/Root'
+import AdminHome from '@pages/admin/home'
+import Analytics from '@pages/analytics'
+import Login from '@pages/login'
+import Record from '@pages/record'
+import TestFirebase from '@pages/TestFirebase'
+import DailyReport from '@pages/user/dailyReport'
+import UserHome from '@pages/user/home'
+import Information from '@pages/user/info'
+import Profile from '@pages/user/profile'
+import Report from '@pages/user/report'
 
 export const router = createBrowserRouter([
   {
@@ -18,16 +18,26 @@ export const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: '/', element: <Navigate to="/login" replace /> },
-      { path: '/admin', element: <AdminDashboard /> },
+      { path: '/login', element: <Login /> },
+
+      { path: '/admin', element: <AdminHome /> },
       { path: '/analytics', element: <Analytics /> },
       { path: '/record', element: <Record /> },
-      { path: '/info', element: <Infomation /> },
-      { path: '/user', element: <Profile /> },
-      { path: '/report', element: <Report /> },
-      { path: '/home', element: <MobileHome /> },
-      { path: '/dailyreport', element: <DailyReport /> },
-      { path: '/testfirebase', element: <TestFirebase /> },
-      { path: '/login', element: <LoginPage /> },
+
+      {
+        path: '/user',
+        element: <Outlet />,
+        children: [
+          { index: true, element: <Navigate to="home" replace /> },
+          { path: 'home', element: <UserHome /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'info', element: <Information /> },
+          { path: 'report', element: <Report /> },
+          { path: 'dailyReport', element: <DailyReport /> },
+        ],
+      },
+
+      { path: 'testFirebase', element: <TestFirebase /> },
     ],
   },
 ])

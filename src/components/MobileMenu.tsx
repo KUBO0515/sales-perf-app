@@ -7,10 +7,10 @@ export default function MobileMenu() {
   const location = useLocation()
 
   const icons = [
-    { path: '/mobilehome', icon: <House />, key: 'home' },
-    { path: '/report', icon: <ChartNoAxesCombined />, key: 'chart' },
-    { path: '/info', icon: <Info />, key: 'info' },
-    { path: '/user', icon: <UserRound />, key: 'user' },
+    { path: '/user/home', icon: <House />, key: 'home' },
+    { path: '/user/report', icon: <ChartNoAxesCombined />, key: 'chart' },
+    { path: '/user/info', icon: <Info />, key: 'info' },
+    { path: '/user/profile', icon: <UserRound />, key: 'user' },
   ]
 
   //mobile用のフッター

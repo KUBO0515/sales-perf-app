@@ -1,5 +1,5 @@
-import ChartCard from '../../components/ChartCard'
-import AdminSidebar from '../../Layouts/AdminSidebar'
+import ChartCard from '@/components/ChartCard'
+import AdminSidebar from '@/components/AdminSidebar'
 import { motion } from 'framer-motion'
 
 export default function Record() {

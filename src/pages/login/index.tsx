@@ -14,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      navigate('/home') // ログイン成功でユーザ用ページへ
+      navigate('/user/home') // ログイン成功でユーザ用ページへ
     } catch {
       setError(
         'ログインに失敗しました。メールアドレスとパスワードを確認してください。'

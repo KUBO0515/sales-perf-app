@@ -1,6 +1,6 @@
-import RecordForm from '../components/RecordForm'
-import ChartCard from '../components/ChartCard'
-import MobileMenu from '../Layouts/MobileMenu'
+import RecordForm from '@/components/RecordForm'
+import ChartCard from '@/components/ChartCard'
+import MobileMenu from '@/components/MobileMenu'
 
 export default function Home() {
   return (
