@@ -1,9 +1,14 @@
+'use client'
+
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { getAuth } from 'firebase/auth'
+import { db } from '@/firebase'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 
 export default function ReportForm() {
   const [form, setForm] = useState({
-    type: '日報',
+    type: '量販店',
     visits: '',
     memo: '',
   })
@@ -16,11 +21,33 @@ export default function ReportForm() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('送信内容:', form)
-    alert('報告を送信しました！')
-    setForm({ type: '日報', visits: '', memo: '' })
+
+    const auth = getAuth()
+    const user = auth.currentUser
+
+    if (!user) {
+      alert('ログインしていません')
+      return
+    }
+
+    try {
+      await addDoc(collection(db, 'testcollection'), {
+        name: user.displayName ?? 'no name',
+        shoptype: form.type,
+        memo: form.memo,
+        visit: Number(form.visits),
+        uid: user.uid,
+        createdAt: serverTimestamp(),
+      })
+
+      alert('報告を送信しました！')
+      setForm({ type: '量販店', visits: '', memo: '' })
+    } catch (error) {
+      console.error('保存エラー:', error)
+      alert('保存に失敗しました')
+    }
   }
 
   return (
