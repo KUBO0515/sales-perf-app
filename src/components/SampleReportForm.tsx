@@ -1,11 +1,17 @@
+'use client'
+
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { getAuth } from 'firebase/auth'
+import { db } from '@/firebase'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 
 export default function ReportForm() {
   const [form, setForm] = useState({
-    type: '日報',
+    type: '量販店',
     visits: '',
     memo: '',
+    acquiredDate: '', // ← 獲得日を追加
   })
 
   const handleChange = (
@@ -16,11 +22,39 @@ export default function ReportForm() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('送信内容:', form)
-    alert('報告を送信しました！')
-    setForm({ type: '日報', visits: '', memo: '' })
+
+    const auth = getAuth()
+    const user = auth.currentUser
+
+    if (!user) {
+      alert('ログインしていません')
+      return
+    }
+
+    try {
+      await addDoc(collection(db, 'testcollection'), {
+        name: user.displayName ?? 'no name',
+        shoptype: form.type,
+        memo: form.memo,
+        visit: Number(form.visits),
+        uid: user.uid,
+        createdAt: serverTimestamp(),
+        acquiredDate: form.acquiredDate ? new Date(form.acquiredDate) : null, // ← Date型で保存
+      })
+
+      alert('報告を送信しました！')
+      setForm({
+        type: '量販店',
+        visits: '',
+        memo: '',
+        acquiredDate: '',
+      })
+    } catch (error) {
+      console.error('保存エラー:', error)
+      alert('保存に失敗しました')
+    }
   }
 
   return (
@@ -73,6 +107,19 @@ export default function ReportForm() {
           rows={3}
           className="w-full resize-none rounded-lg bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-pink-300 focus:outline-none"
           placeholder="例：○○様が再検討中、来店予約○○日予定"
+        />
+      </div>
+
+      {/* 獲得日 */}
+      <div>
+        <label className="mb-1 block font-medium text-gray-700">獲得日</label>
+        <input
+          type="date"
+          name="acquiredDate"
+          value={form.acquiredDate}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-gray-100 px-4 py-2 focus:ring-2 focus:ring-pink-300 focus:outline-none"
         />
       </div>
 
