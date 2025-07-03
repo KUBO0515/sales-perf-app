@@ -1,4 +1,4 @@
-import ReportForm from '@/components/SampleReportForm'
+import ReportForm from '@/components/ReportForm'
 import MobileMenu from '@/components/MobileMenu'
 import PageHeader from '@/components/PageHeader'
 
