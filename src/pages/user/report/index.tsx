@@ -1,65 +1,132 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  Timestamp,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { db } from '@/firebase'
 import { motion } from 'framer-motion'
 import MobileMenu from '@/components/MobileMenu'
 
-const mockReports = [
-  { date: '2025-06-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-  { date: '2025-05-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-  { date: '2025-04-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-  { date: '2025-03-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-  { date: '2025-02-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-  { date: '2025-01-28', type: '日報', summary: '顧客訪問2件、成約1件。' },
-]
+type Report = {
+  id: string
+  name: string
+  shoptype: string
+  memo: string
+  visit: number
+  createdAt?: Timestamp
+  acquiredDate?: Timestamp
+}
 
 export default function Page() {
+  const [reports, setReports] = useState<Report[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const auth = getAuth()
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const q = query(
+            collection(db, 'testcollection'),
+            where('uid', '==', user.uid),
+            orderBy('createdAt', 'desc')
+          )
+          const querySnapshot = await getDocs(q)
+          const data = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })) as Report[]
+          setReports(data)
+        } catch (error) {
+          console.error('Firestore取得エラー:', error)
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        console.log('未ログイン')
+        setReports([])
+        setLoading(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = confirm('このデータを削除しますか？')
+    if (!confirmDelete) return
+
+    try {
+      await deleteDoc(doc(db, 'testcollection', id))
+      setReports((prev) => prev.filter((report) => report.id !== id))
+      alert('削除しました')
+    } catch (error) {
+      console.error('削除エラー:', error)
+      alert('削除に失敗しました')
+    }
+  }
+
+  // Timestamp 型を明示的に指定
+  const formatDate = (timestamp: Timestamp | undefined) => {
+    if (!timestamp?.toDate) return ''
+    const date = timestamp.toDate()
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+  }
+
   return (
     <>
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white to-gray-100 px-4 pt-12 pb-24">
-        {/* 視差背景エフェクト */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <motion.div
-            className="animate-float absolute h-60 w-60 rounded-full bg-yellow-200 opacity-30 mix-blend-multiply blur-3xl filter"
-            initial={{ y: -80 }}
-            animate={{ y: 80 }}
-            transition={{
-              repeat: Infinity,
-              duration: 6,
-              ease: 'easeInOut',
-              repeatType: 'reverse',
-            }}
-          />
-          <motion.div
-            className="animate-float absolute right-0 bottom-0 h-72 w-72 rounded-full bg-pink-200 opacity-30 mix-blend-multiply blur-3xl filter"
-            initial={{ y: 80 }}
-            animate={{ y: -80 }}
-            transition={{
-              repeat: Infinity,
-              duration: 7,
-              ease: 'easeInOut',
-              repeatType: 'reverse',
-            }}
-          />
-        </div>
-
-        {/* コンテンツ */}
         <div className="z-10 mx-auto max-w-2xl space-y-6">
           <h1 className="mb-8 text-center text-3xl font-bold text-gray-800">
             報告履歴
           </h1>
 
-          {mockReports.map((report, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.03 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-              className="space-y-2 rounded-xl bg-white p-6 shadow-xl transition-all"
-            >
-              <p className="text-sm text-gray-500">{report.date}</p>
-              <p className="text-lg font-semibold">{report.type}</p>
-              <p className="text-gray-700">{report.summary}</p>
-            </motion.div>
-          ))}
+          {loading ? (
+            <p className="text-center text-gray-400">読み込み中...</p>
+          ) : reports.length === 0 ? (
+            <p className="text-center text-gray-400">データがありません</p>
+          ) : (
+            reports.map((report, index) => (
+              <motion.div
+                key={report.id}
+                whileHover={{ scale: 1.03 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className="space-y-2 rounded-xl bg-white p-6 shadow-xl transition-all"
+              >
+                <p className="text-sm text-gray-500">
+                  店舗タイプ: {report.shoptype}
+                </p>
+                <p className="text-gray-700">訪問回数: {report.visit}回</p>
+                <p className="text-gray-700">メモ: {report.memo}</p>
+                <p className="text-black-700 text-sm">
+                  獲得日: {formatDate(report.acquiredDate)}
+                </p>
+                <p className="text-sm text-gray-500">
+                  報告日時: {formatDate(report.createdAt)}
+                </p>
+                <div className="pt-2 text-right">
+                  <button
+                    onClick={() => handleDelete(report.id)}
+                    className="rounded bg-red-500 px-4 py-1 text-sm text-white hover:bg-red-600"
+                  >
+                    削除
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
 
