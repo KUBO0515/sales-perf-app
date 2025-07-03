@@ -5,8 +5,10 @@ import { motion } from 'framer-motion'
 import { getAuth } from 'firebase/auth'
 import { db } from '@/firebase'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { useNavigate } from 'react-router-dom'
 
 export default function ReportForm() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     type: '量販店',
     visits: '',
@@ -51,6 +53,7 @@ export default function ReportForm() {
         memo: '',
         acquiredDate: '',
       })
+      navigate('/user/home', { replace: true }) //ホームへ遷移
     } catch (error) {
       console.error('保存エラー:', error)
       alert('保存に失敗しました')
