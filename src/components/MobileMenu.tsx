@@ -15,7 +15,7 @@ export default function MobileMenu() {
 
   //mobile用のフッター
   return (
-    <div className="fixed bottom-0 left-0 flex w-full justify-around gap-8 bg-gray-400 px-8 py-6 text-white shadow-[-4px_-4px_10px_rgba(0,0,0,0.3)]">
+    <div className="fixed bottom-0 left-0 z-50 flex w-full justify-around gap-8 bg-gray-400 px-8 py-6 text-white shadow-[-4px_-4px_10px_rgba(0,0,0,0.3)]">
       {icons.map(({ path, icon, key }) => {
         const isActive = location.pathname === path
         return (
