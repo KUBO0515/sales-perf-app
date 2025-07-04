@@ -6,7 +6,7 @@ import {
   LinearScale,
   Tooltip,
   Legend,
-} from 'chart.js'
+} from 'chart.js/auto'
 import { motion } from 'framer-motion'
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)

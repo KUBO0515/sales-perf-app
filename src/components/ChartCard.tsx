@@ -6,7 +6,7 @@ import {
   LinearScale,
   LineElement,
   PointElement,
-} from 'chart.js'
+} from 'chart.js/auto'
 Chart.register(
   BarElement,
   CategoryScale,

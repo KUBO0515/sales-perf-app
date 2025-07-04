@@ -8,7 +8,7 @@ import {
   PointElement,
   Tooltip as ChartTooltip,
   Legend,
-} from 'chart.js'
+} from 'chart.js/auto'
 import { Chart } from 'react-chartjs-2'
 
 ChartJS.register(
