@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChartLine, Database, LayoutGrid } from 'lucide-react'
+import { ChartLine, Database, LayoutGrid, NotebookText } from 'lucide-react'
 
 export default function AdminSidebar() {
   return (
@@ -11,7 +11,7 @@ export default function AdminSidebar() {
             DashBoard
           </h3>
         </Link>
-        <Link to="/record">
+        <Link to="/admin/record">
           <div className="group m-4">
             <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <Database />
@@ -19,11 +19,19 @@ export default function AdminSidebar() {
             </button>
           </div>
         </Link>
-        <Link to="/analytics">
+        <Link to="/admin/analytics">
           <div className="group m-4">
             <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <ChartLine />
               Analytics
+            </button>
+          </div>
+        </Link>
+        <Link to="/admin/formats">
+          <div className="group m-4">
+            <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
+              <NotebookText />
+              Formats
             </button>
           </div>
         </Link>
