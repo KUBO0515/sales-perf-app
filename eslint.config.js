@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 })
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'functions'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
