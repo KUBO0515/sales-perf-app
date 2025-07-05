@@ -1,4 +1,5 @@
 import MobileMenu from '@components/MobileMenu'
+import PageHeader from '@components/PageHeader'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
@@ -10,7 +11,8 @@ export default function DailyFormats() {
 
   return (
     <>
-      <div className="relative flex min-h-screen flex-col items-center space-y-14 overflow-hidden bg-gradient-to-b from-white via-sky-50 to-indigo-50 px-4 pt-12 pb-24">
+      <PageHeader title="フォーマット選択" />
+      <div className="relative mt-[70px] flex min-h-screen flex-col items-center space-y-14 overflow-hidden bg-gradient-to-b from-white via-sky-50 to-indigo-50 px-4 pt-12 pb-24">
         {/* レポートボタン */}
         <div className="z-10 flex flex-col items-center space-y-6 text-center">
           <h1 className="text-3xl font-extrabold text-gray-800">

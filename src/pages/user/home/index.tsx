@@ -144,21 +144,23 @@ export default function UserHome() {
         </motion.div>
 
         {/* 月表示 */}
-        <div className="z-10 flex items-center space-x-4 text-gray-700">
+        <div className="flex items-center justify-between gap-5 p-4">
           <button
             onClick={prev}
-            className="text-sm text-blue-600 hover:underline"
+            className="rounded-full bg-white px-4 py-2 font-bold text-gray-800 shadow-md transition hover:scale-105"
           >
-            ◀ 前の月
+            {month === 1 ? '12月' : `${month - 1}月`}
           </button>
+
           <h2 className="text-xl font-bold">
             {year}年{month}月の推移
           </h2>
+
           <button
             onClick={next}
-            className="text-sm text-blue-600 hover:underline"
+            className="rounded-full bg-white px-4 py-2 font-bold text-gray-800 shadow-md transition hover:scale-105"
           >
-            次の月 ▶
+            {month === 12 ? '1月' : `${month + 1}月`}
           </button>
         </div>
 
