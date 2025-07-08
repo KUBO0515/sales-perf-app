@@ -47,7 +47,7 @@ export default function Formats() {
       >
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
           <Link
-            to="/admin" // フォーマット作成ページへの遷移
+            to="/admin/formats/createForm" // フォーマット作成ページへの遷移
             className="flex items-center gap-4 rounded-2xl bg-white px-6 py-5 shadow-md transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:ring-2 hover:ring-indigo-300"
           >
             <PlusSquare className="h-8 w-8 text-blue-600" />
@@ -57,7 +57,7 @@ export default function Formats() {
           </Link>
 
           <Link
-            to="/admin" // フォーマット一覧ページへの遷移
+            to="/admin/formats/formatList" // フォーマット一覧ページへの遷移
             className="flex items-center gap-4 rounded-2xl bg-white px-6 py-5 shadow-md transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:ring-2 hover:ring-indigo-300"
           >
             <List className="h-8 w-8 text-blue-600" />
