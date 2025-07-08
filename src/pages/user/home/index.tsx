@@ -137,7 +137,7 @@ export default function UserHome() {
         >
           <Link
             to="/user/dailyFormats"
-            className="block rounded-2xl bg-white/90 px-8 py-4 font-semibold text-gray-800 shadow-lg ring-1 ring-indigo-100 backdrop-blur hover:bg-indigo-100"
+            className="block rounded-2xl bg-white/90 px-8 py-4 font-semibold text-gray-800 shadow-lg backdrop-blur hover:bg-sky-100"
           >
             日報報告
           </Link>

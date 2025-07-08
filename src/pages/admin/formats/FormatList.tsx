@@ -154,18 +154,20 @@ export default function ReportFormatList() {
         <div className="grid gap-4">
           {formats.map((format) => (
             <div key={format.id}>
-              <div className="flex items-center justify-between rounded border bg-white p-4 shadow">
-                <p className="text-lg font-semibold">{format.name}</p>
+              <div className="flex w-full appearance-none items-center justify-between rounded rounded-xl border border-gray-300 bg-white bg-white/90 p-3 p-4 pr-10 shadow-md backdrop-blur-sm">
+                <p className="text-lg font-semibold text-gray-600">
+                  {format.name}
+                </p>
                 <div className="flex gap-4">
                   <button
                     onClick={() => startEdit(format)}
-                    className="text-blue-600 hover:underline"
+                    className="cursor-pointer text-blue-600 hover:underline"
                   >
                     編集
                   </button>
                   <button
                     onClick={() => handleDelete(format.id)}
-                    className="text-red-600 hover:underline"
+                    className="cursor-pointer text-red-600 hover:underline"
                   >
                     削除
                   </button>
@@ -178,7 +180,7 @@ export default function ReportFormatList() {
 
                   <input
                     type="text"
-                    className="w-full rounded border p-2"
+                    className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:outline-none"
                     value={formatName}
                     onChange={(e) => setFormatName(e.target.value)}
                     placeholder="フォーマット名"
@@ -187,7 +189,7 @@ export default function ReportFormatList() {
                   {inputItems.map((input, index) => (
                     <div
                       key={input.id}
-                      className="space-y-2 rounded border bg-gray-50 p-3"
+                      className="space-y-2 rounded-lg border border-gray-300 p-3 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:outline-none"
                     >
                       <div className="flex items-center gap-2">
                         <input
@@ -197,14 +199,14 @@ export default function ReportFormatList() {
                             handleInputChange(index, 'name', e.target.value)
                           }
                           placeholder="項目名"
-                          className="flex-1 rounded border p-2"
+                          className="flex-1 rounded-lg border border-gray-300 p-3 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:outline-none"
                         />
                         <select
                           value={input.type}
                           onChange={(e) =>
                             handleInputChange(index, 'type', e.target.value)
                           }
-                          className="rounded border p-2"
+                          className="rounded-lg border border-gray-300 p-3 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:outline-none"
                         >
                           <option value="text">テキスト</option>
                           <option value="number">数値</option>
@@ -226,7 +228,7 @@ export default function ReportFormatList() {
                             handleInputChange(index, 'options', e.target.value)
                           }
                           placeholder="選択肢（カンマ区切り）"
-                          className="w-full rounded border p-2"
+                          className="w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-300 focus:outline-none"
                         />
                       )}
                     </div>
@@ -235,7 +237,7 @@ export default function ReportFormatList() {
                   <button
                     type="button"
                     onClick={addField}
-                    className="font-semibold text-blue-600"
+                    className="cursor-pointer font-semibold text-blue-600"
                   >
                     + 項目を追加
                   </button>
@@ -243,7 +245,7 @@ export default function ReportFormatList() {
                   <div className="flex gap-4 pt-4">
                     <button
                       onClick={saveInputs}
-                      className="rounded bg-blue-500 px-4 py-2 text-white"
+                      className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
                     >
                       保存する
                     </button>
@@ -252,7 +254,7 @@ export default function ReportFormatList() {
                         setEditingId(null)
                         setInputItems([])
                       }}
-                      className="text-gray-500 hover:underline"
+                      className="cursor-pointer text-gray-500 hover:underline"
                     >
                       キャンセル
                     </button>

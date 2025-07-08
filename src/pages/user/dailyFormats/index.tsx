@@ -33,7 +33,7 @@ export default function DailyFormats() {
   return (
     <>
       <PageHeader title="フォーマット選択" />
-      <div className="relative mt-[70px] flex min-h-screen flex-col items-center space-y-14 overflow-hidden bg-gradient-to-b from-white via-sky-50 to-indigo-50 px-4 pt-12 pb-24">
+      <div className="relative mt-[70px] flex min-h-screen flex-col items-center space-y-14 overflow-hidden px-4 pt-12 pb-24">
         <div className="z-10 flex flex-col items-center space-y-6 text-center">
           <h1 className="text-3xl font-extrabold text-gray-800">
             フォーマットを選択してください
@@ -49,7 +49,7 @@ export default function DailyFormats() {
             >
               <Link
                 to={`/user/dailyReport/${format.id}`} // ← IDをパスに反映
-                className="block rounded-2xl bg-white/90 px-8 py-4 font-semibold text-gray-800 shadow-lg ring-1 ring-indigo-100 backdrop-blur hover:bg-indigo-100"
+                className="text-black-800 block w-64 rounded-2xl px-6 py-4 text-lg font-semibold shadow-md backdrop-blur-md transition hover:bg-sky-100"
               >
                 {format.name}
               </Link>
