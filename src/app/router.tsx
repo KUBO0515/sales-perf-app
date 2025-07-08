@@ -48,6 +48,7 @@ export const router = createBrowserRouter([
           { path: 'info', element: <Information /> },
           { path: 'report', element: <Report /> },
           { path: 'dailyReport', element: <DailyReport /> },
+          { path: 'dailyReport/:formatId', element: <DailyReport /> },
           { path: 'dailyFormats', element: <DailyFormats /> },
         ],
       },
