@@ -1,10 +1,12 @@
-// src/pages/LoginPage.tsx
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../firebase'
+import { auth } from '@/firebase'
+import { AppContext } from '@hooks/useApp'
 
 export default function LoginPage() {
+  const { appContext } = useContext(AppContext)
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -14,11 +16,18 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      navigate('/user/home') // ログイン成功でユーザ用ページへ
     } catch {
       setError(
         'ログインに失敗しました。メールアドレスとパスワードを確認してください。'
       )
+    }
+  }
+
+  if (appContext.isSignIn) {
+    if (appContext.user.isAdmin) {
+      navigate('/admin/home') // ログイン成功でユーザ用ページへ
+    } else {
+      navigate('/user/home') // ログイン成功で管理者用ページへ
     }
   }
 
