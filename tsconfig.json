@@ -4,6 +4,7 @@
     "paths": {
       "@app/*": ["app/*"],
       "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
       "@pages/*": ["pages/*"],
       "@types": ["types/index.ts"],
       "@/*": ["*"]
