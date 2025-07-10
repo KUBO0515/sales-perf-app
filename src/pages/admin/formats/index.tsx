@@ -4,14 +4,14 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
 import AdminSidebar from '@components/AdminSidebar'
 import { db } from '@/firebase'
 import { AppContext } from '@hooks/useApp'
-import { ReportFormat } from '@types/ReportFormat'
+import { ReportFormatData } from '@/types/ReportFormat'
 import FormatForm from './FormatForm'
 
 export default function Page() {
   const { appContext } = useContext(AppContext)
   const companyId = appContext.company.id || ''
 
-  const [formats, setFormats] = useState<ReportFormat[]>([])
+  const [formats, setFormats] = useState<ReportFormatData[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const fetchFormats = async () => {
@@ -25,7 +25,8 @@ export default function Page() {
     setFormats(list)
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id?: string) => {
+    if (!id) return
     const confirmDelete = window.confirm(
       'このフォーマットを完全に削除しますか？'
     )
@@ -71,7 +72,7 @@ export default function Page() {
                 </p>
                 <div className="flex gap-4">
                   <button
-                    onClick={() => setEditingId(format.id)}
+                    onClick={() => setEditingId(format?.id ?? null)}
                     className="cursor-pointer text-blue-600 hover:underline"
                   >
                     編集
