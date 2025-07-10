@@ -1,5 +1,12 @@
 import { Link } from 'react-router-dom'
-import { ChartLine, Database, LayoutGrid, NotebookText } from 'lucide-react'
+import {
+  ChartLine,
+  Database,
+  LayoutGrid,
+  LogOut,
+  NotebookText,
+} from 'lucide-react'
+import { auth } from '@/firebase'
 
 export default function AdminSidebar() {
   return (
@@ -8,7 +15,7 @@ export default function AdminSidebar() {
         <Link to="/admin">
           <h3 className="m-4 flex items-center gap-6 text-center text-2xl">
             <LayoutGrid />
-            DashBoard
+            ダッシュボード
           </h3>
         </Link>
         <Link to="/admin/record">
@@ -23,7 +30,7 @@ export default function AdminSidebar() {
           <div className="group m-4">
             <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <ChartLine />
-              Analytics
+              分析
             </button>
           </div>
         </Link>
@@ -31,10 +38,19 @@ export default function AdminSidebar() {
           <div className="group m-4">
             <button className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600">
               <NotebookText />
-              Formats
+              報告フォーマット
             </button>
           </div>
         </Link>
+        <div className="group m-4">
+          <button
+            onClick={() => auth.signOut()}
+            className="flex w-full cursor-pointer items-center gap-6 rounded-lg p-5 text-center font-bold text-white transition duration-300 group-hover:bg-gray-600"
+          >
+            <LogOut />
+            ログアウト
+          </button>
+        </div>
       </div>
 
       <div className="m-4">
