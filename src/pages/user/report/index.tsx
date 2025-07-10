@@ -17,7 +17,7 @@ import { motion } from 'framer-motion'
 import MobileMenu from '@/components/MobileMenu'
 
 type Report = {
-  id: string
+  id: string // ← FirestoreのドキュメントID
   name: string
   shoptype: string
   memo: string
@@ -76,8 +76,7 @@ export default function Page() {
     }
   }
 
-  // Timestamp 型を明示的に指定
-  const formatDate = (timestamp: Timestamp | undefined) => {
+  const formatDate = (timestamp: Timestamp | undefined | null) => {
     if (!timestamp?.toDate) return ''
     const date = timestamp.toDate()
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
@@ -110,7 +109,7 @@ export default function Page() {
                 </p>
                 <p className="text-gray-700">訪問回数: {report.visit}回</p>
                 <p className="text-gray-700">メモ: {report.memo}</p>
-                <p className="text-black-700 text-sm">
+                <p className="text-sm text-gray-500">
                   獲得日: {formatDate(report.acquiredDate)}
                 </p>
                 <p className="text-sm text-gray-500">
