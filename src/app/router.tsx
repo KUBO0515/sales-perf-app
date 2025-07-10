@@ -15,8 +15,6 @@ import Report from '@pages/user/report'
 import DailyFormats from '@pages/user/dailyFormats'
 import AdminDashboard from '@pages/admin/home'
 import Formats from '@pages/admin/formats'
-import CreateForm from '@pages/admin/formats/CreateForm'
-import FormatList from '@pages/admin/formats/FormatList'
 
 export const router = createBrowserRouter([
   {
@@ -35,8 +33,6 @@ export const router = createBrowserRouter([
           { path: 'analytics', element: <Analytics /> },
           { path: 'record', element: <Record /> },
           { path: 'formats', element: <Formats /> },
-          { path: 'formats/createForm', element: <CreateForm /> },
-          { path: 'formats/formatList', element: <FormatList /> },
         ],
       },
 

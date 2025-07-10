@@ -9,6 +9,7 @@ import {
 import { auth } from '@/firebase'
 
 export default function AdminSidebar() {
+  // NOTE: pages/user/profile/index.tsx のメニューの書き方とどちらかに統一する
   return (
     <aside className="fixed top-0 left-0 flex h-screen w-[280px] flex-col justify-between bg-gray-800 p-4 text-white">
       <div className="flex flex-col">
