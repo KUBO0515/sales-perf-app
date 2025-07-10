@@ -1,8 +1,7 @@
 // TODO: 入力項目のorderを使った並び替え機能実装
 // TODO: バリデーション処理
-// TODO: コレクションとドキュメントの型定義
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   addDoc,
   collection,
@@ -14,8 +13,13 @@ import {
 
 import { db } from '@/firebase'
 
-import { ReportFormat } from '@types/ReportFormat'
-import { ReportInputFormat } from '@types/ReportFormatInput'
+import {
+  blankReportFormatInputData,
+  isReportFormatType,
+  reportFormatInputConverter,
+  ReportFormatInputData,
+} from '@/types/ReportFormatInput'
+import { reportFormatConverter } from '@/types/ReportFormat'
 
 export default function FormatForm({
   editingId,
@@ -27,23 +31,26 @@ export default function FormatForm({
   onClose: () => void
 }) {
   const [formatName, setFormatName] = useState('')
-  const [inputs, setInputs] = useState<
-    {
-      id: null | string
-      name: string
-      type: string
-      options: string[]
-    }[]
-  >([{ id: null, name: '', type: 'text', options: [] }])
+  const [inputs, setInputs] = useState<ReportFormatInputData[]>([
+    blankReportFormatInputData,
+  ])
 
-  const handleInputChange = (
-    index: number,
-    field: 'name' | 'type',
-    value: string
-  ) => {
+  const handleInputNameChange = (index: number, value: string) => {
     const newInputs = [...inputs]
-    newInputs[index][field] = value
-    if (field === 'type' && value !== 'select') {
+    newInputs[index]['name'] = value
+    newInputs[index].options = [] // select以外ならoptionsはクリア
+    setInputs(newInputs)
+  }
+
+  const handleInputTypeChange = (index: number, value: unknown) => {
+    // value が ReportFormatTypes のいずれかであることを確認
+    if (!isReportFormatType(value)) {
+      return
+    }
+
+    const newInputs = [...inputs]
+    newInputs[index]['type'] = value
+    if (value !== 'select') {
       newInputs[index].options = [] // select以外ならoptionsはクリア
     }
     setInputs(newInputs)
@@ -72,7 +79,7 @@ export default function FormatForm({
   }
 
   const addField = () => {
-    setInputs([...inputs, { id: null, name: '', type: 'text', options: [] }])
+    setInputs([...inputs, blankReportFormatInputData])
   }
 
   const removeField = (index: number) => {
@@ -95,16 +102,18 @@ export default function FormatForm({
       if (editingId) {
         // フォーマット名を更新
         await updateDoc(
-          doc(db, 'companies', companyId, 'reportFormats', editingId),
+          doc(
+            db,
+            `companies${companyId}/reportFormats${editingId}`
+          ).withConverter(reportFormatConverter),
           { name: formatName }
         )
       } else {
         // 新規作成の場合は新しいドキュメントを追加
         formatId = (
-          await addDoc(
-            collection(db, 'companies', companyId, 'reportFormats'),
-            { name: formatName }
-          )
+          await addDoc(collection(db, `companies/${companyId}/reportFormats`), {
+            name: formatName,
+          })
         ).id
       }
 
@@ -147,7 +156,7 @@ export default function FormatForm({
 
       alert('フォーマットを保存しました')
       setFormatName('')
-      setInputs([{ id: null, name: '', type: 'text', options: [] }])
+      setInputs([blankReportFormatInputData])
       onClose() // フォーマット保存後にモーダルを閉じる
     } catch (error) {
       console.error('保存エラー:', error)
@@ -173,26 +182,10 @@ export default function FormatForm({
               'reportFormats',
               editingId,
               'reportFormatInputs'
-            )
+            ).withConverter(reportFormatInputConverter)
           )
-          const formatInputs = inputsSnap.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as {
-            id: null | string
-            name: string
-            type: string
-            options: string[]
-          }[]
 
-          setInputs(
-            formatInputs.map((input) => ({
-              id: input.id ?? null, // ドキュメントIDを保持
-              name: input.name || '',
-              type: input.type || 'text',
-              options: input.options || [],
-            }))
-          )
+          setInputs(inputsSnap.docs.map((doc) => doc.data()))
         } else {
           console.error('指定されたフォーマットが見つかりません:', editingId)
           alert('指定されたフォーマットが見つかりません')
@@ -207,7 +200,7 @@ export default function FormatForm({
     } else {
       // 新規作成モードの場合、初期状態をセット
       setFormatName('')
-      setInputs([{ id: null, name: '', type: 'text', options: [] }])
+      setInputs([blankReportFormatInputData])
     }
   }, [editingId, companyId, onClose])
 
@@ -240,19 +233,15 @@ export default function FormatForm({
                   type="text"
                   placeholder="項目名（例: 感想）"
                   value={input.name}
-                  onChange={(e) =>
-                    handleInputChange(index, 'name', e.target.value)
-                  }
+                  onChange={(e) => handleInputNameChange(index, e.target.value)}
                   className="flex-1 rounded-lg border border-gray-300 p-3 shadow-sm focus:ring-1 focus:ring-gray-300 focus:outline-none"
                 />
                 <select
                   value={input.type}
-                  onChange={(e) =>
-                    handleInputChange(index, 'type', e.target.value)
-                  }
+                  onChange={(e) => handleInputTypeChange(index, e.target.value)}
                   className="w-40 rounded-lg border border-gray-300 p-3 shadow-sm focus:ring-1 focus:ring-gray-300 focus:outline-none"
                 >
-                  <option value="text">テキスト</option>
+                  <option value="string">テキスト</option>
                   <option value="number">数値</option>
                   <option value="select">選択</option>
                 </select>

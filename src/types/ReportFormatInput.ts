@@ -2,6 +2,10 @@ import { QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 
 export type ReportFormatTypes = 'string' | 'number' | 'select'
 
+export function isReportFormatType(value: unknown): value is ReportFormatTypes {
+  return value === 'string' || value === 'number' || value === 'select'
+}
+
 export type ReportFormatInputData = {
   id?: string
   name: string
