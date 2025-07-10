@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { collection, getDocs } from 'firebase/firestore'
@@ -8,6 +8,7 @@ import { db } from '@/firebase'
 
 import MobileMenu from '@components/MobileMenu'
 import PageHeader from '@components/PageHeader'
+import { AppContext } from '@hooks/useApp'
 
 type ReportFormat = {
   id: string
@@ -15,11 +16,18 @@ type ReportFormat = {
 }
 
 export default function DailyFormats() {
+  const { appContext } = useContext(AppContext)
+  const companyId = appContext.company.id || ''
   const [formats, setFormats] = useState<ReportFormat[]>([])
 
   useEffect(() => {
     const fetchFormats = async () => {
-      const snapshot = await getDocs(collection(db, 'reportFormats'))
+      if (!companyId) return
+
+      const snapshot = await getDocs(
+        collection(db, 'companies', companyId, 'reportFormats')
+      )
+
       const list = snapshot.docs.map((doc) => ({
         id: doc.id,
         name: doc.data().name || '(名称未設定)',
@@ -28,7 +36,7 @@ export default function DailyFormats() {
     }
 
     fetchFormats()
-  }, [])
+  }, [companyId])
 
   return (
     <>
@@ -48,7 +56,7 @@ export default function DailyFormats() {
               transition={{ delay: 0.15 * i }}
             >
               <Link
-                to={`/user/dailyReport/${format.id}`} // ← IDをパスに反映
+                to={`/user/dailyReport/${format.id}`}
                 className="text-black-800 block w-64 rounded-2xl px-6 py-4 text-lg font-semibold shadow-md backdrop-blur-md transition hover:bg-sky-100"
               >
                 {format.name}
