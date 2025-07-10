@@ -1,4 +1,5 @@
-'use client'
+// TODO: 入力項目のorderを使った並び替え機能実装
+// TODO: バリデーション処理
 
 import AdminSidebar from '@components/AdminSidebar'
 import React, { useContext, useState } from 'react'
