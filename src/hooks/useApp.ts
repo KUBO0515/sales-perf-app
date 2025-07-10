@@ -6,22 +6,16 @@ import {
   useState,
 } from 'react'
 import { doc, getDoc } from 'firebase/firestore'
+
 import { auth, db } from '@/firebase'
-
-export type User = {
-  id: string
-  name: string
-  isAdmin: boolean
-}
-
-export type Company = {
-  id: string
-  name: string
-}
+import { userReferenceConverter } from '@/types/UserReference'
+import { blankUser, User, userConverter } from '@/types/User'
+import { blankCompany, Company, companyConverter } from '@/types/Company'
 
 export type AppContextValue = {
-  company: Company | null
-  user: User | null
+  isSignIn: boolean // サインイン状態かどうか
+  company: Company
+  user: User
 }
 
 export type AppContextType = {
@@ -30,8 +24,9 @@ export type AppContextType = {
 }
 
 export const initialAppContext: AppContextValue = {
-  company: null,
-  user: null,
+  isSignIn: false,
+  company: blankCompany,
+  user: blankUser,
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -63,32 +58,40 @@ const useApp = () => {
 
       // まず、userドキュメントのパスがあるドキュメントから取得する
       let userReferenceSnap = await getDoc(
-        doc(db, 'userReferences', mySocialUid)
+        doc(db, 'userReferences', mySocialUid).withConverter(
+          userReferenceConverter
+        )
       )
 
       // ユーザ参照が存在しない場合は3秒待ってリトライする
       if (!userReferenceSnap.exists()) {
         await new Promise((resolve) => setTimeout(resolve, 3000))
-        userReferenceSnap = await getDoc(doc(db, 'userReferences', mySocialUid))
+        userReferenceSnap = await getDoc(
+          doc(db, 'userReferences', mySocialUid).withConverter(
+            userReferenceConverter
+          )
+        )
       }
 
       // userReferenceが存在したときだけユーザ情報を取得する。
       const newUserSnap = userReferenceSnap.exists()
-        ? await getDoc(userReferenceSnap.data().path)
+        ? await getDoc(
+            userReferenceSnap.data().path.withConverter(userConverter)
+          )
         : null
 
       if (newUserSnap === null || !newUserSnap.exists()) {
-        setAppContext({
-          ...appContext,
-          user: null,
-          company: null,
-        })
+        setAppContext(initialAppContext)
         return
       }
 
       // 会社情報を取得する
       const newCompanySnap = await getDoc(
-        doc(db, 'companies', newUserSnap.ref.parent.parent?.id ?? 'xxx')
+        doc(
+          db,
+          'companies',
+          newUserSnap.ref.parent.parent?.id ?? 'xxx'
+        ).withConverter(companyConverter)
       )
 
       const newCompany = newCompanySnap.exists()
@@ -97,8 +100,9 @@ const useApp = () => {
 
       setAppContext((appContext) => ({
         ...appContext,
-        user: newUserSnap.data() as User,
-        company: newCompany as unknown as Company,
+        isSignIn: true,
+        user: newUserSnap.data(),
+        company: newCompany,
       }))
     })
 

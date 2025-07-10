@@ -1,12 +1,21 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+import { auth } from '@/firebase'
 import MobileMenu from '@/components/MobileMenu'
+import { LogOut } from 'lucide-react'
 
 export default function Page() {
-  const menu = [
-    { title: 'プロフィール', path: '/user/profile' },
-    { title: 'アカウント設定', path: '/user/settings' },
-    { title: 'ログアウト', path: '/logout' },
+  const navigate = useNavigate()
+
+  const menuList = [
+    { title: 'プロフィール', onClick: () => navigate('/user/profile') },
+    { title: 'アカウント設定', onClick: () => navigate('/user/settings') },
+    {
+      title: 'ログアウト',
+      icon: <LogOut className="me-3 inline" />,
+      onClick: () => auth.signOut(),
+    },
   ]
 
   return (
@@ -42,26 +51,26 @@ export default function Page() {
           <h1 className="mb-6 text-3xl font-bold text-gray-800">
             ユーザーメニュー
           </h1>
-          {menu.map((item, index) => (
+          {menuList.map((menu, index) => (
             <motion.div
-              key={item.path}
+              key={index}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 * index }}
             >
-              <Link
-                to={item.path}
-                className="block rounded-xl bg-white px-8 py-4 font-semibold text-gray-800 shadow-xl transition-all duration-300 hover:bg-blue-100"
+              <button
+                onClick={menu.onClick}
+                className="flex w-full items-center justify-center rounded-lg bg-white px-4 py-2 text-lg font-medium text-gray-800 shadow hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
               >
-                {item.title}
-              </Link>
+                {menu.icon && menu.icon}
+                {menu.title}
+              </button>
             </motion.div>
           ))}
         </div>
       </div>
-
       <MobileMenu />
     </>
   )
