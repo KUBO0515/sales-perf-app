@@ -1,74 +1,127 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import {
-  collection,
+  collectionGroup,
   getDocs,
   query,
-  where,
   orderBy,
   Timestamp,
   deleteDoc,
   doc,
+  where,
 } from 'firebase/firestore'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { db } from '@/firebase'
 import { motion } from 'framer-motion'
 import MobileMenu from '@/components/MobileMenu'
+import { AppContext } from '@hooks/useApp'
 
 type Report = {
+<<<<<<< HEAD
   id: string // ← FirestoreのドキュメントID
   name: string
   shoptype: string
   memo: string
   visit: number
+=======
+  id: string
+  inputs: Record<string, string>
+>>>>>>> main
   createdAt?: Timestamp
-  acquiredDate?: Timestamp
+  companyId: string
+  formatId: string
+  dateKey: string
 }
 
-export default function Page() {
+export default function ReportHistory() {
+  const { appContext } = useContext(AppContext)
+  const companyId = appContext.company.id || ''
+
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
+  const [inputNameMap, setInputNameMap] = useState<Record<string, string>>({})
+  const [formatNameMap, setFormatNameMap] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const auth = getAuth()
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const q = query(
-            collection(db, 'testcollection'),
-            where('uid', '==', user.uid),
-            orderBy('createdAt', 'desc')
-          )
-          const querySnapshot = await getDocs(q)
-          const data = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as Report[]
-          setReports(data)
-        } catch (error) {
-          console.error('Firestore取得エラー:', error)
-        } finally {
-          setLoading(false)
+      if (!user || !companyId) return
+
+      try {
+        const q = query(
+          collectionGroup(db, 'dailyReports'),
+          where('uid', '==', user.uid), // UID でフィルタ
+          orderBy('createdAt', 'desc')
+        )
+        const snapshot = await getDocs(q)
+
+        const fetched: Report[] = []
+        for (const docSnap of snapshot.docs) {
+          const path = docSnap.ref.path
+          const pathParts = path.split('/')
+          const companyId = pathParts[1]
+          const formatId = pathParts[3]
+          const dateKey = pathParts[5]
+
+          fetched.push({
+            id: docSnap.id,
+            ...(docSnap.data() as any),
+            companyId,
+            formatId,
+            dateKey,
+          })
         }
-      } else {
-        console.log('未ログイン')
-        setReports([])
+        setReports(fetched)
+      } catch (err) {
+        console.error('データ取得エラー:', err)
+      } finally {
         setLoading(false)
       }
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [companyId])
 
-  const handleDelete = async (id: string) => {
+  // 入力項目ID→名前のマッピング
+  useEffect(() => {
+    const fetchInputNames = async () => {
+      if (!companyId) return
+      const snapshot = await getDocs(collectionGroup(db, 'reportFormatInputs'))
+      const map: Record<string, string> = {}
+      snapshot.docs.forEach((doc) => {
+        map[doc.id] = doc.data().name
+      })
+      setInputNameMap(map)
+    }
+
+    fetchInputNames()
+  }, [companyId])
+
+  // フォーマットID→フォーマット名のマッピング
+  useEffect(() => {
+    const fetchFormatNames = async () => {
+      if (!companyId) return
+      const snapshot = await getDocs(collectionGroup(db, 'reportFormats'))
+      const map: Record<string, string> = {}
+      snapshot.docs.forEach((doc) => {
+        map[doc.id] = doc.data().name || '(名称未設定)'
+      })
+      setFormatNameMap(map)
+    }
+
+    fetchFormatNames()
+  }, [companyId])
+
+  const handleDelete = async (report: Report) => {
     const confirmDelete = confirm('このデータを削除しますか？')
     if (!confirmDelete) return
 
     try {
-      await deleteDoc(doc(db, 'testcollection', id))
-      setReports((prev) => prev.filter((report) => report.id !== id))
+      const docPath = `companies/${report.companyId}/reportFormats/${report.formatId}/days/${report.dateKey}/dailyReports/${report.id}`
+      await deleteDoc(doc(db, docPath))
+      setReports((prev) => prev.filter((r) => r.id !== report.id))
       alert('削除しました')
     } catch (error) {
       console.error('削除エラー:', error)
@@ -76,7 +129,11 @@ export default function Page() {
     }
   }
 
+<<<<<<< HEAD
   const formatDate = (timestamp: Timestamp | undefined | null) => {
+=======
+  const formatDate = (timestamp: Timestamp | undefined) => {
+>>>>>>> main
     if (!timestamp?.toDate) return ''
     const date = timestamp.toDate()
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
@@ -87,7 +144,7 @@ export default function Page() {
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white to-gray-100 px-4 pt-12 pb-24">
         <div className="z-10 mx-auto max-w-2xl space-y-6">
           <h1 className="mb-8 text-center text-3xl font-bold text-gray-800">
-            報告履歴
+            あなたの日報履歴
           </h1>
 
           {loading ? (
@@ -104,7 +161,18 @@ export default function Page() {
                 transition={{ delay: 0.1 * index }}
                 className="space-y-2 rounded-xl bg-white p-6 shadow-xl transition-all"
               >
+                <h2 className="text-lg font-bold text-gray-800">
+                  フォーマット:{' '}
+                  {formatNameMap[report.formatId] || report.formatId}
+                </h2>
+
+                {Object.entries(report.inputs).map(([id, value]) => (
+                  <p key={id} className="text-gray-700">
+                    <strong>{inputNameMap[id] || id}:</strong> {value}
+                  </p>
+                ))}
                 <p className="text-sm text-gray-500">
+<<<<<<< HEAD
                   店舗タイプ: {report.shoptype}
                 </p>
                 <p className="text-gray-700">訪問回数: {report.visit}回</p>
@@ -114,10 +182,13 @@ export default function Page() {
                 </p>
                 <p className="text-sm text-gray-500">
                   報告日時: {formatDate(report.createdAt)}
+=======
+                  送信日: {formatDate(report.createdAt)}
+>>>>>>> main
                 </p>
                 <div className="pt-2 text-right">
                   <button
-                    onClick={() => handleDelete(report.id)}
+                    onClick={() => handleDelete(report)}
                     className="rounded bg-red-500 px-4 py-1 text-sm text-white hover:bg-red-600"
                   >
                     削除
@@ -128,7 +199,6 @@ export default function Page() {
           )}
         </div>
       </div>
-
       <MobileMenu />
     </>
   )

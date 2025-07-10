@@ -1,6 +1,4 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth'
 import {
   collection,
@@ -11,6 +9,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
+import { AppContext } from '@/hooks/useApp'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import MobileMenu from '@/components/MobileMenu'
@@ -36,6 +35,8 @@ const generateWeeksOfMonth = (year: number, month: number) => {
 }
 
 export default function UserHome() {
+  const { appContext } = useContext(AppContext)
+
   /* --- 日付状態 --- */
   const today = new Date()
   const [year, setYear] = useState(today.getFullYear())
@@ -139,7 +140,7 @@ export default function UserHome() {
             to="/user/dailyFormats"
             className="block rounded-2xl bg-white/90 px-8 py-4 font-semibold text-gray-800 shadow-lg backdrop-blur hover:bg-sky-100"
           >
-            日報報告
+            日報報告 {appContext.user?.name}
           </Link>
         </motion.div>
 
