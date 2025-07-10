@@ -18,16 +18,8 @@ import MobileMenu from '@/components/MobileMenu'
 import { AppContext } from '@hooks/useApp'
 
 type Report = {
-<<<<<<< HEAD
-  id: string // ← FirestoreのドキュメントID
-  name: string
-  shoptype: string
-  memo: string
-  visit: number
-=======
   id: string
   inputs: Record<string, string>
->>>>>>> main
   createdAt?: Timestamp
   companyId: string
   formatId: string
@@ -129,11 +121,7 @@ export default function ReportHistory() {
     }
   }
 
-<<<<<<< HEAD
-  const formatDate = (timestamp: Timestamp | undefined | null) => {
-=======
   const formatDate = (timestamp: Timestamp | undefined) => {
->>>>>>> main
     if (!timestamp?.toDate) return ''
     const date = timestamp.toDate()
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
@@ -172,19 +160,7 @@ export default function ReportHistory() {
                   </p>
                 ))}
                 <p className="text-sm text-gray-500">
-<<<<<<< HEAD
-                  店舗タイプ: {report.shoptype}
-                </p>
-                <p className="text-gray-700">訪問回数: {report.visit}回</p>
-                <p className="text-gray-700">メモ: {report.memo}</p>
-                <p className="text-sm text-gray-500">
-                  獲得日: {formatDate(report.acquiredDate)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  報告日時: {formatDate(report.createdAt)}
-=======
                   送信日: {formatDate(report.createdAt)}
->>>>>>> main
                 </p>
                 <div className="pt-2 text-right">
                   <button
