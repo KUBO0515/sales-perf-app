@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState, useContext } from 'react'
 import {
   collectionGroup,
@@ -10,86 +8,68 @@ import {
   deleteDoc,
   doc,
   where,
+  collection,
+  limit,
 } from 'firebase/firestore'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { db } from '@/firebase'
 import { motion } from 'framer-motion'
-import MobileMenu from '@/components/MobileMenu'
-import { AppContext } from '@hooks/useApp'
 
-type Report = {
-  id: string
-  inputs: Record<string, string>
-  createdAt?: Timestamp
-  companyId: string
-  formatId: string
-  dateKey: string
-}
+import MobileMenu from '@/components/MobileMenu'
+import { db } from '@/firebase'
+import { AppContext } from '@hooks/useApp'
+import { Report, reportConverter } from '@/types/Report'
 
 export default function ReportHistory() {
   const { appContext } = useContext(AppContext)
-  const companyId = appContext.company.id || ''
+  const companyId = appContext.company.id
+  const userId = appContext.user.id
 
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
+
+  // TODO: ReportFormat, ReportFormatInput の型定義を使い、きちんと取得する方式にリファクタリングする
   const [inputNameMap, setInputNameMap] = useState<Record<string, string>>({})
   const [formatNameMap, setFormatNameMap] = useState<Record<string, string>>({})
 
-  useEffect(() => {
-    const auth = getAuth()
+  const fetchReports = async () => {
+    try {
+      const q = query(
+        collection(db, `companies/${companyId}/reports`).withConverter(
+          reportConverter
+        ),
+        where('userId', '==', userId), // UID でフィルタ
+        orderBy('createdAt', 'desc'),
+        limit(100) // 最新の100件を取得
+      )
+      const reportsSnapshot = await getDocs(q)
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user || !companyId) return
-
-      try {
-        const q = query(
-          collectionGroup(db, 'dailyReports'),
-          where('uid', '==', user.uid), // UID でフィルタ
-          orderBy('createdAt', 'desc')
-        )
-        const snapshot = await getDocs(q)
-
-        const fetched: Report[] = []
-        for (const docSnap of snapshot.docs) {
-          const path = docSnap.ref.path
-          const pathParts = path.split('/')
-          const companyId = pathParts[1]
-          const formatId = pathParts[3]
-          const dateKey = pathParts[5]
-
-          fetched.push({
-            id: docSnap.id,
-            ...docSnap.data(),
-            companyId,
-            formatId,
-            dateKey,
-          } as Report)
-        }
-        setReports(fetched)
-      } catch (err) {
-        console.error('データ取得エラー:', err)
-      } finally {
-        setLoading(false)
+      const newReports: Report[] = []
+      for (const reportDocSnap of reportsSnapshot.docs) {
+        newReports.push(reportDocSnap.data())
       }
-    })
-
-    return () => unsubscribe()
-  }, [companyId])
-
-  // 入力項目ID→名前のマッピング
-  useEffect(() => {
-    const fetchInputNames = async () => {
-      if (!companyId) return
-      const snapshot = await getDocs(collectionGroup(db, 'reportFormatInputs'))
-      const map: Record<string, string> = {}
-      snapshot.docs.forEach((doc) => {
-        map[doc.id] = doc.data().name
-      })
-      setInputNameMap(map)
+      setReports(newReports)
+    } catch (err) {
+      console.error('データ取得エラー:', err)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    fetchInputNames()
-  }, [companyId])
+  const fetchInputNames = async () => {
+    if (!companyId) return
+    const snapshot = await getDocs(collectionGroup(db, 'reportFormatInputs'))
+    const map: Record<string, string> = {}
+    snapshot.docs.forEach((doc) => {
+      map[doc.id] = doc.data().name
+    })
+    setInputNameMap(map)
+  }
+
+  useEffect(() => {
+    fetchReports().then(() => {
+      fetchInputNames()
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // フォーマットID→フォーマット名のマッピング
   useEffect(() => {
@@ -111,9 +91,9 @@ export default function ReportHistory() {
     if (!confirmDelete) return
 
     try {
-      const docPath = `companies/${report.companyId}/reportFormats/${report.formatId}/days/${report.dateKey}/dailyReports/${report.id}`
-      await deleteDoc(doc(db, docPath))
-      setReports((prev) => prev.filter((r) => r.id !== report.id))
+      const docPath = `companies/${companyId}/reports/${report.id}`
+      await deleteDoc(doc(db, docPath).withConverter(reportConverter))
+      await fetchReports()
       alert('削除しました')
     } catch (error) {
       console.error('削除エラー:', error)
@@ -124,7 +104,7 @@ export default function ReportHistory() {
   const formatDate = (timestamp: Timestamp | undefined) => {
     if (!timestamp?.toDate) return ''
     const date = timestamp.toDate()
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}時${date.getMinutes()}分 ${date.getSeconds()}秒`
   }
 
   return (
@@ -151,7 +131,8 @@ export default function ReportHistory() {
               >
                 <h2 className="text-lg font-bold text-gray-800">
                   フォーマット:{' '}
-                  {formatNameMap[report.formatId] || report.formatId}
+                  {formatNameMap[report.reportFormatId] ||
+                    report.reportFormatId}
                 </h2>
 
                 {Object.entries(report.inputs).map(([id, value]) => (
