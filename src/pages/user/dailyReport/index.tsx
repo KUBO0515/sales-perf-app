@@ -7,12 +7,13 @@ import { db } from '@/firebase'
 import PageHeader from '@components/PageHeader'
 import MobileMenu from '@components/MobileMenu'
 import { AppContext } from '@hooks/useApp'
-import { getAuth } from 'firebase/auth'
+import { ReportFormatTypes } from '@/types/ReportFormatInput'
+import { reportConverter } from '@/types/Report'
 
 type InputItem = {
   id: string
   name: string
-  type: 'text' | 'number' | 'select'
+  type: ReportFormatTypes
   options?: string[]
   disabled?: boolean
   default?: string
@@ -20,7 +21,8 @@ type InputItem = {
 
 export default function DailyReport() {
   const { appContext } = useContext(AppContext)
-  const companyId = appContext.company.id || ''
+  const companyId = appContext.company.id
+  const userId = appContext.user.id || ''
 
   const { formatId } = useParams<{ formatId: string }>()
   const navigate = useNavigate()
@@ -70,26 +72,16 @@ export default function DailyReport() {
   const handleSubmit = async () => {
     if (!companyId || !formatId) return
 
-    const today = new Date()
-    const dateKey = today.toISOString().slice(0, 10).replace(/-/g, '')
-
-    const docRef = collection(
+    const reportsRef = collection(
       db,
-      `companies/${companyId}/reportFormats/${formatId}/days/${dateKey}/dailyReports`
-    )
+      `companies/${companyId}/reports/`
+    ).withConverter(reportConverter)
 
-    const auth = getAuth()
-    const user = auth.currentUser
-
-    if (!user) {
-      alert('ログインしていません')
-      return
-    }
-
-    await addDoc(docRef, {
+    await addDoc(reportsRef, {
+      userId: userId,
+      reportFormatId: formatId,
       inputs: formData,
       createdAt: Timestamp.now(),
-      uid: user.uid, // ← ここが重要！
     })
 
     alert('送信が完了しました')
@@ -113,7 +105,7 @@ export default function DailyReport() {
                   {item.name}
                 </label>
 
-                {item.type === 'text' && (
+                {item.type === 'string' && (
                   <textarea
                     className="w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-sky-100 focus:outline-none"
                     value={formData[item.id]}

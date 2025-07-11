@@ -59,11 +59,11 @@ export default function ReportHistory() {
 
           fetched.push({
             id: docSnap.id,
-            ...(docSnap.data() as any),
+            ...docSnap.data(),
             companyId,
             formatId,
             dateKey,
-          })
+          } as Report)
         }
         setReports(fetched)
       } catch (err) {
