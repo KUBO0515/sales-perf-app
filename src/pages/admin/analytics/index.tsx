@@ -136,12 +136,12 @@ export default function Page() {
               <select
                 className="ml-4 rounded border p-2"
                 onChange={(e) => setTargetFormatId(e.target.value)}
+                value={targetFormatId}
               >
                 {reportFormats.map((format) => (
                   <option
                     key={format.id}
                     value={format.id}
-                    selected={targetFormatId === format.id}
                     onClick={() => setTargetFormatId(format.id || '')}
                   >
                     {format.name}
@@ -154,12 +154,12 @@ export default function Page() {
               <select
                 className="ml-4 rounded border p-2"
                 onChange={(e) => setTargetInputId(e.target.value)}
+                value={targetInputId ?? ''}
               >
                 {currentReportFormatInputs.map((input) => (
                   <option
                     key={input.id}
                     value={input.id}
-                    selected={targetInputId === input.id}
                     onClick={() => setTargetInputId(input.id || null)}
                   >
                     {input.name}
