@@ -21,7 +21,19 @@ export class WeeklyAggregate {
   }
 
   get timeLabel(): string {
-    return `${this.yearWeek.slice(0, 4)}年 第${Number(this.yearWeek.slice(5, 6))}週`
+    return `${this.month}月 第${this.monthlyWeek}週`
+  }
+
+  get month(): number {
+    return Math.ceil(this.week / 4)
+  }
+
+  get week(): number {
+    return Number(this.yearWeek.slice(-2))
+  }
+
+  get monthlyWeek(): number {
+    return this.week % 4 > 0 ? this.week % 4 : 4
   }
 }
 
