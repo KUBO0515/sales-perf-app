@@ -55,6 +55,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchFormats()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
