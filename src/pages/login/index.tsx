@@ -45,6 +45,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="username"
               className="w-full rounded border border-gray-300 px-3 py-2"
             />
           </div>
@@ -55,6 +56,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
               className="w-full rounded border border-gray-300 px-3 py-2"
             />
           </div>

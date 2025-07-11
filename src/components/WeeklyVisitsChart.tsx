@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js/auto'
 import { Chart } from 'react-chartjs-2'
+import { WeeklyAggregate } from '@/types/WeeklyAggregate'
 
 ChartJS.register(
   CategoryScale,
@@ -33,14 +34,16 @@ const LINE_COLOR = '#6366f1'
 
 interface Props {
   labels: string[]
-  userData: number[]
-  teamData: number[]
+  userAggregates: WeeklyAggregate[]
+  totalAggregates: WeeklyAggregate[]
+  inputId?: string | null
 }
 
 export default function WeeklyVisitsChart({
   labels,
-  userData,
-  teamData,
+  userAggregates,
+  totalAggregates,
+  inputId = null,
 }: Props) {
   const data = useMemo(
     () => ({
@@ -49,7 +52,7 @@ export default function WeeklyVisitsChart({
         {
           type: 'bar' as const,
           label: 'あなた',
-          data: userData,
+          data: userAggregates.map((a) => a.reports[inputId ?? 'value'] ?? 0),
           backgroundColor: BAR_COLORS.slice(0, labels.length),
           borderRadius: 6,
           borderSkipped: false,
@@ -57,7 +60,7 @@ export default function WeeklyVisitsChart({
         {
           type: 'line' as const,
           label: '全体',
-          data: teamData,
+          data: totalAggregates.map((a) => a.reports[inputId ?? 'value'] ?? 0),
           borderColor: LINE_COLOR,
           borderWidth: 3,
           tension: 0.35,
@@ -66,7 +69,7 @@ export default function WeeklyVisitsChart({
         },
       ],
     }),
-    [labels, userData, teamData]
+    [labels, userAggregates, totalAggregates]
   )
 
   const options = useMemo(
