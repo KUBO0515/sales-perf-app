@@ -16,6 +16,7 @@ type InputItem = {
   options?: string[]
   disabled?: boolean
   default?: string
+  order?: number
 }
 
 export default function DailyReport() {
@@ -39,17 +40,20 @@ export default function DailyReport() {
         )
       )
 
-      const inputs: InputItem[] = inputSnap.docs.map((doc) => {
-        const data = doc.data()
-        return {
-          id: doc.id,
-          name: data.name,
-          type: data.type,
-          options: data.options || [],
-          disabled: data.disabled || false,
-          default: data.default || '',
-        }
-      })
+      const inputs: InputItem[] = inputSnap.docs
+        .map((doc) => {
+          const data = doc.data()
+          return {
+            id: doc.id,
+            name: data.name,
+            type: data.type,
+            options: data.options || [],
+            disabled: data.disabled || false,
+            default: data.default || '',
+            order: data.order || 0, // order追加
+          }
+        })
+        .sort((a, b) => a.order - b.order) // order昇順にソート
 
       setInputItems(inputs)
 
@@ -89,7 +93,7 @@ export default function DailyReport() {
     await addDoc(docRef, {
       inputs: formData,
       createdAt: Timestamp.now(),
-      uid: user.uid, // ← ここが重要！
+      uid: user.uid,
     })
 
     alert('送信が完了しました')
