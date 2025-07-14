@@ -27,14 +27,12 @@ export default function UserHome() {
 
   /* --- 日付状態 --- */
   const today = new Date()
-  const [year, setYear] = useState(today.getFullYear())
+  const [year] = useState(today.getFullYear())
   // const [month, setMonth] = useState(today.getMonth() + 1)
-  const [month, setMonth] = useState(5)
+  const [month] = useState(5)
 
-  const [reportFormats, setReportFormats] = useState<ReportFormat[]>([])
-  const [currentReportFormatInputs, setCurrentReportFormatInputs] = useState<
-    ReportFormatInput[]
-  >([])
+  const [, setReportFormats] = useState<ReportFormat[]>([])
+  const [, setCurrentReportFormatInputs] = useState<ReportFormatInput[]>([])
 
   const [targetFormatId, setTargetFormatId] = useState('')
   const [targetInputId, setTargetInputId] = useState<string | null>(null)
@@ -42,79 +40,78 @@ export default function UserHome() {
   const [userAggregates, setUserAggregates] = useState<WeeklyAggregate[]>([])
   const [totalAggregates, setTotalAggregates] = useState<WeeklyAggregate[]>([])
 
-  const fetchData = async (y: number, m: number) => {
-    // 報告フォーマットを取得
-    const newFormats = (
-      await getDocs(
-        collection(db, `companies/${companyId}/reportFormats`).withConverter(
-          reportFormatConverter
-        )
-      )
-    ).docs.map((doc) => doc.data())
-    const newTargetFormatId =
-      targetFormatId !== '' ? targetFormatId : newFormats[0].id || ''
-
-    // 報告フォーマットの入力項目を取得
-    const newReportFormatInputs = (
-      await getDocs(
-        collection(
-          db,
-          `companies/${companyId}/reportFormats/${newTargetFormatId}/reportFormatInputs`
-        ).withConverter(reportFormatInputConverter)
-      )
-    ).docs.map((doc) => doc.data())
-    const newTargetInputId =
-      targetInputId !== null ||
-      newReportFormatInputs.find((i) => i.id === targetInputId) != null
-        ? targetInputId
-        : newReportFormatInputs.find((i) => i.type === 'number')?.id || null
-
-    const newUserAggregates: WeeklyAggregate[] = []
-    const newTotalAggregates: WeeklyAggregate[] = []
-
-    for (let i = month * 4 - 3; i <= month * 4; i++) {
-      // 週集計データを取得(個人)
-      const newUserAggregate = (
-        await getDoc(
-          doc(
-            db,
-            `companies/${companyId}/weeklyAggregates/${year}-${('0' + i).slice(-2)}-${newTargetFormatId}/users/${userId}`
-          ).withConverter(weeklyAggregateConverter)
-        )
-      ).data()
-
-      if (newUserAggregate) {
-        newUserAggregates.push(newUserAggregate)
-      }
-
-      // 週集計データを取得(全体)
-      const newTotalAggregate = (
-        await getDoc(
-          doc(
-            db,
-            `companies/${companyId}/weeklyAggregates/${year}-${('0' + i).slice(-2)}-${newTargetFormatId}`
-          ).withConverter(weeklyAggregateConverter)
-        )
-      ).data()
-
-      if (newTotalAggregate) {
-        newTotalAggregates.push(newTotalAggregate)
-      }
-    }
-
-    setReportFormats(newFormats)
-    setTargetFormatId(newTargetFormatId)
-
-    setCurrentReportFormatInputs(newReportFormatInputs)
-    setTargetInputId(newTargetInputId)
-
-    setUserAggregates(newUserAggregates)
-    setTotalAggregates(newTotalAggregates)
-  }
-
   useEffect(() => {
-    fetchData(year, month)
-  }, [year, month, targetFormatId])
+    const fetchData = async () => {
+      // 報告フォーマットを取得
+      const newFormats = (
+        await getDocs(
+          collection(db, `companies/${companyId}/reportFormats`).withConverter(
+            reportFormatConverter
+          )
+        )
+      ).docs.map((doc) => doc.data())
+      const newTargetFormatId =
+        targetFormatId !== '' ? targetFormatId : newFormats[0].id || ''
+
+      // 報告フォーマットの入力項目を取得
+      const newReportFormatInputs = (
+        await getDocs(
+          collection(
+            db,
+            `companies/${companyId}/reportFormats/${newTargetFormatId}/reportFormatInputs`
+          ).withConverter(reportFormatInputConverter)
+        )
+      ).docs.map((doc) => doc.data())
+      const newTargetInputId =
+        targetInputId !== null ||
+        newReportFormatInputs.find((i) => i.id === targetInputId) != null
+          ? targetInputId
+          : newReportFormatInputs.find((i) => i.type === 'number')?.id || null
+
+      const newUserAggregates: WeeklyAggregate[] = []
+      const newTotalAggregates: WeeklyAggregate[] = []
+
+      for (let i = month * 4 - 3; i <= month * 4; i++) {
+        // 週集計データを取得(個人)
+        const newUserAggregate = (
+          await getDoc(
+            doc(
+              db,
+              `companies/${companyId}/weeklyAggregates/${year}-${('0' + i).slice(-2)}-${newTargetFormatId}/users/${userId}`
+            ).withConverter(weeklyAggregateConverter)
+          )
+        ).data()
+
+        if (newUserAggregate) {
+          newUserAggregates.push(newUserAggregate)
+        }
+
+        // 週集計データを取得(全体)
+        const newTotalAggregate = (
+          await getDoc(
+            doc(
+              db,
+              `companies/${companyId}/weeklyAggregates/${year}-${('0' + i).slice(-2)}-${newTargetFormatId}`
+            ).withConverter(weeklyAggregateConverter)
+          )
+        ).data()
+
+        if (newTotalAggregate) {
+          newTotalAggregates.push(newTotalAggregate)
+        }
+      }
+
+      setReportFormats(newFormats)
+      setTargetFormatId(newTargetFormatId)
+
+      setCurrentReportFormatInputs(newReportFormatInputs)
+      setTargetInputId(newTargetInputId)
+
+      setUserAggregates(newUserAggregates)
+      setTotalAggregates(newTotalAggregates)
+    }
+    fetchData()
+  }, [year, month, targetFormatId, targetInputId, companyId, userId])
 
   /* --- 画面 --- */
   return (
